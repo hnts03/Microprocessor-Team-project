@@ -47,8 +47,12 @@ void unmapper();
 void emergency_closer();
 
 truth_t logic();
-void select_mode();
+truth_t select_mode(int* counter, int* exit_flag, int* init_on);
 void input_mode();
+void error();
+error_t checker(int argc, char* argv[], int* init_on );
+void state_init(int* exit_flag, int* init_on);
+
 
 
 #endif

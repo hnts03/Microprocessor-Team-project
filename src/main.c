@@ -23,14 +23,25 @@ static off_t IEB_FND[MAX_FND] = {
 static int fd;
 static int map_counter = 0;
 static void * map_data[100];
-static seclection_t sel; 
+static seclection_t sel; // selection_t struct is in main.h
+
+// This variables are state flag.
+// Start the state that matching flag is 1
+int init = 1;
+int TI = 0;
+int WS = 0;
+int WD = 0;
 
 
 int main(int argc, char* argv[]) {
 	
 	int i;
 	short * led, * dot[MAX_DOT], * fnd[MAX_FND];
-	short * clcd_cmd, * clcd_data, * keypad_out, * keypad_in;
+	short * clcd_cmd, * clcd_data/*, * keypad_out, * keypad_in*/; // in ximulator, keypad doesn't work
+
+	int init_on[3] = {0, 0, 0};	// control flag of init, [0] : led, [1] : dot, [2] : fnd
+	
+	
 	
 	fd = open("/dev/mem", O_RDWR|O_SYNC);
 	if (fd == -1) {
@@ -38,6 +49,7 @@ int main(int argc, char* argv[]) {
 		exit(EXIT_FAILURE);
 	}
 	
+	// Mapping part
 	led = mapper(IEB_LED, PROT_WRITE);
 	for( i=0; i<MAX_DOT; i++ ) {
 		dot[i] = mapper(IEB_DOT[i], PROT_WRITE); // 2nd argument is protect arg. if PROT_WRITE : enable write, if PROT_READ : enable read
@@ -47,17 +59,22 @@ int main(int argc, char* argv[]) {
 	}
 	clcd_cmd  = mapper(IEB_CLCD_CMD, PROT_WRITE);
 	clcd_data = mapper(IEB_CLCD_DATA, PROT_WRITE);
-	keypad_out  = mapper(IEB_KEY_W, PROT_WRITE);
-	keypad_in = mapper(IEB_KEY_R, PROT_READ);
+	//keypad_out  = mapper(IEB_KEY_W, PROT_WRITE);	// in ximulator, keypad doesn't work
+	//keypad_in = mapper(IEB_KEY_R, PROT_READ);		// in ximulator, keypad doesn't work
 	
+
+
+	// Initialize part
 	init_led(led);
 	init_dot(dot);
 	init_fnd(fnd);
 	init_clcd(clcd_cmd, clcd_data);
-	init_keypad(keypad_out, keypad_in);
+	//init_keypad(keypad_out, keypad_in);			// in ximulator, keypad doesn't work
 	
 	sel.all = 0;
-	while( logic() == TRUE ) {	}
+
+	if (checker(argc, argv, init_on) == ERROR){error();}
+	else {while( logic(init_on) == TRUE ) {	}}
 	
 	unmapper();
 	close(fd);
@@ -87,67 +104,107 @@ void emergency_closer() {
 	exit(EXIT_FAILURE);
 }
 
-truth_t logic() {
-	if( sel.all == 0 ) { select_mode(); }
-	else if( sel.exit == 1 ) { return FALSE; }
-	else { input_mode(); }
+truth_t logic(int* init_on) {
+	int exit_flag = 0;
+
+	if (init == 1){state_init(&exit_flag, init_on); init = 0; TI = 1; return FALSE;}
+	// if (TI == 1){state_TI(); TI = 0; WS = 1;}
+	// if (WS == 1){state_WS(); WS = 0; WD = 1;}
+	// if (WD == 1){state_WD(); WD = 0; return FALSE;}
+
 	return TRUE;
 }
 
-void select_mode() {
-	int i;  char buf[100];
-	char clcd_str[20] = "";
-	
+void state_init(int* exit_flag, int* init_on){
+	int counter = 2;
+
 	led_clear();
 	dot_clear();
 	fnd_clear();
 	clcd_clear_display();
+
+
+	while(select_mode(&counter, exit_flag, init_on) == TRUE){ } // mode select loop
+
+
+}
+
+
+truth_t select_mode(int* counter, int* exit_flag, int* init_on) {
+	int i;  char buf[100];
+	char clcd_str[20] = "";
 	
-	printf("\n");
-	printf("*********** Select device **********\n");
-	printf("*   l (LED)       d (Dot Matrix)   *\n");
-	printf("*   f (FND)       c (CLCD)         *\n");
-	printf("*   a (All devices)                *\n");
-	printf("*       press 'e' to exit program  *\n");
-	printf("************************************\n\n");
+	if (*counter == 2){
+		system("clear");
+		printf("\n");
+		printf("************ Select Mode ***********\n");
+		printf("*   0 : Standard    1 : Blanket    *\n");
+		printf("*   2 : Rinse       3 : Dehyderate *\n");
+		printf("************************************\n");
+		printf("*    press 'e' to exit program *** *\n");
+		printf("* init_led_on : %d init_dot_on : %d  *\n", init_on[0], init_on[1]);
+		printf("* init_fnd_on : %d                  *\n", init_on[2]);
+		printf("************************************\n\n");
+		*counter = 0;
+	}
 	scanf("%s", buf);
 	
-	for( i=0; i<strlen(buf); i++ ) {
-		if( buf[i] == 'l' ) { sel.led = 1; }
-		else if( buf[i] == 'd' ) { sel.dot  = 1; }
-		else if( buf[i] == 'f' ) { sel.fnd  = 1; }
-		else if( buf[i] == 'c' ) { sel.clcd = 1; }
-		else if( buf[i] == 'e' ) { sel.exit = 1;  break; }
-		else if( buf[i] == 'a' ) { 
-			sel.all = 0xFF;  sel.exit = 0;  break;
-		}
-	}
-	
-	if( sel.led  == 1 ) { strcat(clcd_str, "LED "); }
-	if( sel.dot  == 1 ) { strcat(clcd_str, "Dot "); }
-	if( sel.fnd  == 1 ) { strcat(clcd_str, "FND "); }
-	if( sel.clcd == 1 ) { strcat(clcd_str, "CLCD"); }
-	clcd_write_string(clcd_str);
+	if ((*buf == '0') || (*buf == '1') || (*buf == '2') || (*buf == '3')){return FALSE;}
+	else if(*buf == 'e'){*exit_flag = 1; return FALSE;}
+	else {printf("Wrong input. Try again\n"); (*counter) += 1; return TRUE;}
 	
 }
 
-void input_mode() {
-	int key_count, key_value;
-	char clcd_str[20];
-	key_count = keypad_read(&key_value);
+// void input_mode() {
+// 	int key_count, key_value;
+// 	char clcd_str[20];
+// 	key_count = keypad_read(&key_value);
 	
-	if( key_count == 1 ) {
-		if( sel.led  == 1 ) { led_bit(key_value); }
-		if( sel.dot  == 1 ) { dot_write(key_value); }
-		if( sel.fnd  == 1 ) { fnd_write(key_value, 7); }
-		if( sel.clcd == 1 ) { 
-			sprintf(clcd_str, "%#04x            ", key_value);
-			clcd_set_DDRAM(0x40);
-			clcd_write_string(clcd_str);
+// 	if( key_count == 1 ) {
+// 		if( sel.led  == 1 ) { led_bit(key_value); }
+// 		if( sel.dot  == 1 ) { dot_write(key_value); }
+// 		if( sel.fnd  == 1 ) { fnd_write(key_value, 7); }
+// 		if( sel.clcd == 1 ) { 
+// 			sprintf(clcd_str, "%#04x            ", key_value);
+// 			clcd_set_DDRAM(0x40);
+// 			clcd_write_string(clcd_str);
+// 		}
+// 	}
+// 	else if( key_count > 1 ) {
+// 		sel.all = 0;
+// 	}
+// }
+
+// This function is for checking argv  
+error_t checker(int argc, char* argv[], int* init_on ){
+	int err_flag = 0;
+
+	if (argc > 4){return ERROR;}
+	else if (argc >= 2) {
+		for (int i = 0; i < argc; i++){
+			if(strcmp(argv[i], "led-on") == 0){init_on[0] = 1;}
+			//if(strcmp(argv[i], "led-off") == 0){init_on[0] = 0;}  	// These are actually not needed
+			else if(strcmp(argv[i], "dot-on") == 0){init_on[1] = 1;}
+			//if(strcmp(argv[i], "dot-off") == 0){init_on[1] = 0;}
+			else if(strcmp(argv[i], "fnd-on") == 0){init_on[2] = 1;}
+			//if(strcmp(argv[i], "fnd-off") == 0){init_on[2] = 0;}
+			else {err_flag = 1; printf("err_flag_on");}
 		}
 	}
-	else if( key_count > 1 ) {
-		sel.all = 0;
-	}
+	return SUCCESS;
+} 
+
+// if argv is not available
+void error(){
+	printf("Arguments are not available. Please Check the arguments.");
+	clcd_write_string("ERROR");
+
+	usleep(1000000);
 }
+
+
+
+//void state_TI(){}
+//void state_WS(){}
+//void state_WD(){}
 

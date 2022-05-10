@@ -1,6 +1,6 @@
 CC := gcc
 
-OUTPUT		= keypad
+OUTPUT		= washer
 SRCS		= ./src/main.c \
 				./src/led.c\
 				./src/dot.c\
@@ -20,3 +20,4 @@ xim : $(SRCS)
 
 clean:
 	@rm -f $(OUTPUT)
+	@rm -f xim_$(OUTPUT)
