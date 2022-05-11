@@ -29,6 +29,7 @@ void clcd_shift(int SC, int RL);
 void clcd_function_set(int DL, int N, int F);
 void clcd_set_DDRAM(int address);
 void clcd_write_string(char str[]);
+void s_init_clcd();
 
 
 #endif

@@ -107,8 +107,19 @@ void emergency_closer() {
 truth_t logic(int* init_on) {
 	int exit_flag = 0;
 
-	if (init == 1){state_init(&exit_flag, init_on); init = 0; TI = 1; return FALSE;}
-	// if (TI == 1){state_TI(); TI = 0; WS = 1;}
+	if (init == 1){
+		state_init(&exit_flag, init_on); 
+		init = 0; TI = 1; 
+		// return FALSE; 					// For debug
+	}
+
+	 if (TI == 1){
+	 // state_TI();
+	 TI = 0; WS = 1;
+	 return FALSE;							// For debug
+	 }										// Successfully accesable
+
+
 	// if (WS == 1){state_WS(); WS = 0; WD = 1;}
 	// if (WD == 1){state_WD(); WD = 0; return FALSE;}
 
@@ -118,11 +129,16 @@ truth_t logic(int* init_on) {
 void state_init(int* exit_flag, int* init_on){
 	int counter = 2;
 
+	//system("clear");						// clear terminal window
 	led_clear();
 	dot_clear();
 	fnd_clear();
 	clcd_clear_display();
 
+	s_init_clcd();							// static function
+	s_init_fnd(init_on[2]);					// static function
+	s_init_dot(init_on[1]);					// static function
+	s_init_led(init_on[0]);					// dynamic function
 
 	while(select_mode(&counter, exit_flag, init_on) == TRUE){ } // mode select loop
 
@@ -134,46 +150,35 @@ truth_t select_mode(int* counter, int* exit_flag, int* init_on) {
 	int i;  char buf[100];
 	char clcd_str[20] = "";
 	
-	if (*counter == 2){
-		system("clear");
-		printf("\n");
-		printf("************ Select Mode ***********\n");
-		printf("*   0 : Standard    1 : Blanket    *\n");
-		printf("*   2 : Rinse       3 : Dehyderate *\n");
-		printf("************************************\n");
-		printf("*    press 'e' to exit program *** *\n");
-		printf("* init_led_on : %d init_dot_on : %d  *\n", init_on[0], init_on[1]);
-		printf("* init_fnd_on : %d                  *\n", init_on[2]);
-		printf("************************************\n\n");
-		*counter = 0;
-	}
+
+	printf("\n");
+	printf("************ Select Mode ***********\n");
+	printf("*   0 : Standard    1 : Blanket    *\n");
+	printf("*   2 : Rinse       3 : Dehyderate *\n");
+	printf("************************************\n");
+	printf("*    press 'e' to exit program *** *\n");
+	printf("* init_led_on : %d init_dot_on : %d  *\n", init_on[0], init_on[1]);
+	printf("* init_fnd_on : %d                  *\n", init_on[2]);
+	printf("************************************\n\n");
+
+	if (*counter == 2){*counter = 0;}
 	scanf("%s", buf);
 	
 	if ((*buf == '0') || (*buf == '1') || (*buf == '2') || (*buf == '3')){return FALSE;}
-	else if(*buf == 'e'){*exit_flag = 1; return FALSE;}
+	else if(*buf == 'e'){
+		*exit_flag = 1; 
+		clcd_clear_display();
+		clcd_write_string("Exit mode");
+		dot_clear();
+		led_clear();
+		fnd_clear();
+		usleep(50000);
+		return FALSE;
+	}
 	else {printf("Wrong input. Try again\n"); (*counter) += 1; return TRUE;}
 	
 }
 
-// void input_mode() {
-// 	int key_count, key_value;
-// 	char clcd_str[20];
-// 	key_count = keypad_read(&key_value);
-	
-// 	if( key_count == 1 ) {
-// 		if( sel.led  == 1 ) { led_bit(key_value); }
-// 		if( sel.dot  == 1 ) { dot_write(key_value); }
-// 		if( sel.fnd  == 1 ) { fnd_write(key_value, 7); }
-// 		if( sel.clcd == 1 ) { 
-// 			sprintf(clcd_str, "%#04x            ", key_value);
-// 			clcd_set_DDRAM(0x40);
-// 			clcd_write_string(clcd_str);
-// 		}
-// 	}
-// 	else if( key_count > 1 ) {
-// 		sel.all = 0;
-// 	}
-// }
 
 // This function is for checking argv  
 error_t checker(int argc, char* argv[], int* init_on ){

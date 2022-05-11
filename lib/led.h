@@ -12,5 +12,7 @@ void led_up_shift();
 void led_blink_all();
 void led_clear();
 void led_all();
+void s_init_led(int init_led_on);
+void s_TI_led();
 
 #endif

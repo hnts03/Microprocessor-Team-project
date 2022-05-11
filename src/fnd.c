@@ -60,6 +60,7 @@ void fnd_0(){
 	int i;
 	for(i=0; i<MAX_FND; i++){
 		*fnd[i] = 0x3F;
+	}
 }
 
 // FND operation of 1st state.

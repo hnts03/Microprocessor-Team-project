@@ -58,14 +58,14 @@ void s_init_led(int init_led_on){
 	int i = 0;
 
 	if (init_led_on == 1){
-		while(/* is_key_clicked */){
+		while(/* is_key_clicked */ i<=6){
 			i++;
-			if (i < 8){ *led = (short) ~((*unsigned long)0xFF00 >> i); usleep(100000);}
-			else if (i >= 8) {*led = (short) ~((*unsigned long)0xFF00 >> (i - 8)); usleep(100000);}
-			if (i == 16) {i = 0;}
+			if (i < 8){ *led = (short) ~((unsigned long)0xFF00 >> i); usleep(100000);}
+			// else if (i >= 8) {*led = (short) ~((unsigned long)0xFF00 >> (i - 8)); usleep(100000);}
+			if (i == 8) {i = 0;}
 		}
 	}
-	else {*led = 0;}
+	else {*led = ~0;}
 }
 
 // led operation of 2nd state
@@ -75,8 +75,8 @@ void s_TI_led(){
 	usleep(500000);
 	while(/* keypad_read() == 16 */1){
 		if (*led != 0x55) {*led != (short)0x55; usleep(50000);}
-		else if {*led = (short)0xAA; usleep(50000);}
-		printf("s_TI_led() not fixed");
+		else {*led = (short)0xAA; usleep(50000);}
+		//printf("s_TI_led() not fixed");
 		break;
 	}
 
