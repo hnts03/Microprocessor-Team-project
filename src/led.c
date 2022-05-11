@@ -67,3 +67,17 @@ void s_init_led(int init_led_on){
 	}
 	else {*led = 0;}
 }
+
+// led operation of 2nd state
+// Sequential blink of odd and even LEDs
+void s_TI_led(){
+	*led = (short) ~(0xAA);				// odd blink
+	usleep(500000);
+	while(/* keypad_read() == 16 */1){
+		if (*led != 0x55) {*led != (short)0x55; usleep(50000);}
+		else if {*led = (short)0xAA; usleep(50000);}
+		printf("s_TI_led() not fixed");
+		break;
+	}
+
+}
