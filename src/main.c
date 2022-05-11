@@ -106,22 +106,37 @@ void emergency_closer() {
 
 truth_t logic(int* init_on) {
 	int exit_flag = 0;
+	int input_time = -1;
+	int digit_num = 1;
 
+	// State 1
 	if (init == 1){
 		state_init(&exit_flag, init_on); 
 		init = 0; TI = 1; 
 		// return FALSE; 					// For debug
 	}
 
-	 if (TI == 1){
-	 state_TI();
-	 TI = 0; WS = 1;
-	 return FALSE;							// For debug
-	 }										// Successfully accesible
+	// State 2
+	if (TI == 1){
+		state_TI(&input_time, &digit_num);
 
+		TI = 0; WS = 1;
+		// return FALSE;							// For debug
+	}										// Successfully accesible
 
-	// if (WS == 1){state_WS(); WS = 0; WD = 1;}
-	// if (WD == 1){state_WD(); WD = 0; return FALSE;}
+	// State 3
+	if (WS == 1){
+		state_WS(input_time, digit_num); 
+		WS = 0; WD = 1; 
+		// return FALSE;						// For debug
+	}
+
+	// State 4
+	if (WD == 1){
+		state_WD(); 
+		WD = 0; 
+		return FALSE;
+	}
 
 	return TRUE;
 }
@@ -174,8 +189,10 @@ truth_t select_mode(int* counter, int* exit_flag, int* init_on) {
 				break;
 			case '2':
 				s_init_clcd_select_mode("Rinse");
+				break;
 			case '3':
 				s_init_clcd_select_mode("Dehyderate");
+				break;
 		}
 		sleep(2);
 		return FALSE;
@@ -222,23 +239,37 @@ void error(){
 	usleep(1000000);
 }
 
-void state_TI(){
-	int key_num = -1;
-	int enter_flag = 0;
+void state_TI(int* input_time, int* digit_num){
+	int key_num = -1;		
+	int enter_flag = 0;	
 	int loop_count = 0;
 
+	key_num = 37;				// These 3 assignment is for test
+	enter_flag = 1;
+	loop_count = 2;
+
 	s_TI_clcd();
-	// s_TI_led();				s_TI_led and dot will combine with while loop below
+	s_TI_fnd(key_num, loop_count);	// for test.
+	// s_TI_led();				// s_TI_led and dot will combine with while loop below
 	// s_TI_dot();
 	while(enter_flag != 1){
 		// enter_flag = s_TI_keypad(&key_num, &loop_count);
 		// /*enter_flag =*/s_TI_fnd(key_num, loop_count);
 		// sleep(1);			// sampling delay = 1s
 	}
-
+	*input_time = key_num;
+	*digit_num = loop_count;
 }
 
 
-//void state_WS(){}
-//void state_WD(){}
+void state_WS(int input_time, int digit_num){
+	s_WS_led(input_time);
+	// s_WS_dot(input_time);
+	// s_WS_fnd(input_time, digit_num);
+	// s_WS_clcd(input_time);
+}
+
+void state_WD(){
+
+}
 

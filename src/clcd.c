@@ -108,3 +108,19 @@ void s_TI_clcd(){
 	clcd_set_DDRAM(0x40);
 	clcd_write_string("0~9:NUM    F:ETR");
 }
+
+// clcd operation of 3rd state
+void s_WS_clcd(int input_time){
+	int i = 0;
+	
+	while(i!=input_time){
+		clcd_clear_display();
+		if(i%4 == 0) {clcd_write_string("Washing");}
+		if(i%4 == 1) {clcd_write_string("Washing.");}
+		if(i%4 == 2) {clcd_write_string("Washing..");}
+		if(i%4 == 3) {clcd_write_string("Washing...");}
+		i++;
+		usleep(500000);
+	}
+	
+}

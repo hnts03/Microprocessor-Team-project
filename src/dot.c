@@ -29,6 +29,26 @@ static unsigned short dot_TIME[4][MAX_DOT] = {
 	{0x7F, 0x49, 0x49, 0x49, 0x49}  // E
 };
 
+static unsigned short dot_tornado[6][MAX_DOT] = {
+	{0x70, 0x70, 0x77, 0x07, 0x07},
+	{0x00, 0x77, 0x77, 0x77, 0x00},
+	{0x07, 0x07, 0x77, 0x70, 0x70},
+	{0x0E, 0x0E, 0x36, 0x38, 0x38},
+	{0x1C, 0x1C, 0x00, 0x1C, 0x1C},
+	{0x38, 0x38, 0x36, 0x0E, 0x0E}
+};
+
+/*		Tornado bitmap
+11100     01110     00111      00000     00000     00000
+11100     01110     00111      00111     00000     11100
+11100     01110     00111      00111     11011     11100
+00000     00000     00000      11011     11011     11011
+00111     01110     11100      11100     11011     00111
+00111     01110     11100      11100     00000     00111
+00111     01110     11100      00000     00000     00000
+*/
+
+
 static short * dot[MAX_DOT];
 
 void init_dot(short * address[]) {
@@ -85,7 +105,24 @@ void s_TI_dot(){
 		for(j = 0; j<MAX_DOT; j++){
 			*dot[j] = dot_TIME[i][j];
 		}
-		usleep(500000);
+		usleep(50000);
+		i++;
+	}
+}
+
+// Operation of dot in 3rd state
+void s_WS_dot(int input_time){
+	int i = 0;
+	int j;
+	int counter = 0;
+	while(/* keypad_read() == 'e' */ counter != 3){	// temporary condition	
+		if (i == 6){i = 0; counter++;}
+
+		// for control the function char by char
+		for(j = 0; j<MAX_DOT; j++){
+			*dot[j] = dot_tornado[i][j];
+		}
+		usleep(50000);
 		i++;
 	}
 }

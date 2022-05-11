@@ -33,6 +33,7 @@ void s_init_clcd();
 void s_init_clcd_select_mode(char* mode_name);
 void wrong_select();
 void s_TI_clcd();
+void s_WS_clcd(int input_time);
 
 
 #endif

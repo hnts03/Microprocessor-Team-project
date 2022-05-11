@@ -55,6 +55,17 @@ void fnd_hexa_number(unsigned long number) {
 	}
 }
 
+// for s_WS_fnd
+void fnd_deca_number(unsigned long number, int digit_num){
+	int i;
+	int temp = number;
+	for (i = 0; i<digit_num; i++){
+		fnd_write((short)(temp%10), i);
+		temp = temp / 10;
+		usleep(1);
+	}
+}
+
 // for s_init_fnd
 void fnd_0(){
 	int i;
@@ -86,4 +97,13 @@ int s_TI_fnd(int key_num, int loop_counter){
 		fnd_write(temp_num, i);
 	}
 	return 1;
+}
+
+// FND operation of 3rd state
+void s_WS_fnd(int input_time, int digit_num){
+	int time;
+	for (time = input_time; time >= 0; time--){
+		fnd_deca_number(time, digit_num);
+		usleep(500000);		// for 0.5s
+	}
 }

@@ -82,3 +82,16 @@ void s_TI_led(){
 	}
 
 }
+
+// led operation of 3rd state
+// this function is same with s_init_led(). but stop trigger is key_num
+void s_WS_led(int input_time){
+	int i = 0;
+
+	while(i<=10/*i != key_num */){
+		i++;
+		if (i < 8){ *led = (short) ~((unsigned long)0x0100 >> i); usleep(50000);}
+		else if (i >= 8) {*led = (short) ~((unsigned long)(0x01 << i) >> 8 ); usleep(50000);}
+		if (i == 16) {i = 0;}
+	}
+}

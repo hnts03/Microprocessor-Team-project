@@ -14,5 +14,6 @@ void led_clear();
 void led_all();
 void s_init_led(int init_led_on);
 void s_TI_led();
+void s_WS_led(int input_time);
 
 #endif

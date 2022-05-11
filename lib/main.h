@@ -57,7 +57,8 @@ void input_mode();
 void error();
 error_t checker(int argc, char* argv[], int* init_on );
 void state_init(int* exit_flag, int* init_on);
-void state_TI();
+void state_TI(int* input_time, int* digit_num);
+void state_WS(int input_time, int digit_num);
 
 
 #endif
