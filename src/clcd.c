@@ -85,3 +85,26 @@ void s_init_clcd(){
 	clcd_set_DDRAM(0x40);
 	clcd_write_string("Insert Mode");	
 }
+
+// when select mode, print mode string
+void s_init_clcd_select_mode(char* mode_name){
+	clcd_clear_display();
+	clcd_set_DDRAM(0);
+	clcd_write_string(mode_name);
+}
+
+// when choose wrong
+void wrong_select(){
+	clcd_clear_display();
+	clcd_write_string("Wrong input");
+	clcd_set_DDRAM(0x40);
+	clcd_write_string("Please Retry");
+}
+
+// clcd operation of 2nd state
+void s_TI_clcd(){
+	clcd_clear_display();
+	clcd_write_string("Insert Time E:BS");
+	clcd_set_DDRAM(0x40);
+	clcd_write_string("0~9:NUM    F:ETR");
+}

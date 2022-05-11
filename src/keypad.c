@@ -1,5 +1,6 @@
 //-------| src/keypad.c |-------//
 #include "keypad.h"
+#include "clcd.h"
 
 
 static short * keypad_out, * keypad_in;
@@ -33,4 +34,36 @@ int s_init_keypad(){
 	keypad_read(&temp);
 	if ((temp == 0) || (temp == 1) || (temp == 2) || (temp == 3)) {return 0;}
 	return 1;
+}
+
+int s_TI_keypad(int* key_num, int* loop_count){
+	int temp_num;
+	int cur_key_num = *key_num;
+	keypad_read(&temp_num);
+
+	if ((temp_num >= 10) || (temp_num <14)){		// if click wrong button
+		void wrong_select();
+	}
+
+	else if (temp_num < 10){						// if click 0~9 button
+		if(cur_key_num == -1){cur_key_num == 0;}
+		*key_num = cur_key_num * 10 + temp_num;
+		*loop_count += 1;	// This variable points number of digits
+	}
+
+	else if(temp_num >= 14){						// if click 14(e), 15(f) button
+		if (temp_num == 14){						// if click 14(e). => erase
+			*key_num = cur_key_num / 10;
+			*loop_count -= 1;
+		}
+		else if(temp_num == 15){					//if click 15(f). => enter :: goto next state
+			if(*key_num == -1) {
+				void wrong_select();
+				return 0;
+			}
+			return 1;
+		}
+
+	}
+	return 0;
 }

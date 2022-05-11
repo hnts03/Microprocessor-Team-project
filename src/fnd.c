@@ -70,3 +70,20 @@ void s_init_fnd(int init_fnd_on){
 	if (init_fnd_on == 1){fnd_0();}
 	else {fnd_clear();}
 }
+
+
+// FND operation of 2nd state
+int s_TI_fnd(int key_num, int loop_counter){
+	int temp_num;
+	int calc_step = key_num;
+
+	if (loop_counter == 0){return 0;}			// if loop_counter == 0, This function not work
+	if (loop_counter >= 8){return 0;}			// if loop_counter over 8, it can't display on FND
+	for (int i = 0; i < loop_counter; i++){
+		temp_num = calc_step % 10;
+		calc_step = calc_step / 10;
+
+		fnd_write(temp_num, i);
+	}
+	return 1;
+}

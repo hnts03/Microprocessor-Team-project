@@ -21,6 +21,14 @@ static unsigned short dot_hexadecimal[16][MAX_DOT] = {
 	{0x7F, 0x48, 0x48, 0x48, 0x48}  // F
 };
 
+static unsigned short dot_TIME[4][MAX_DOT] = {
+	{0x60, 0x60, 0x7F, 0x60, 0x60},	// T
+	//{0x00, 0x60, 0x6F, 0x60, 0x00}, // i
+	{0x41, 0x41, 0x7F, 0x41, 0x41}, // I
+	{0x7F, 0x70, 0x0C, 0x70, 0x7F}, // M
+	{0x7F, 0x49, 0x49, 0x49, 0x49}  // E
+};
+
 static short * dot[MAX_DOT];
 
 void init_dot(short * address[]) {
@@ -62,4 +70,22 @@ void dot_on(){
 void s_init_dot(int init_dot_on){
 	if (init_dot_on == 1) {dot_on();}
 	else {dot_clear();}
+}
+
+
+// Operation of dot in 2nd state
+void s_TI_dot(){
+	int i = 0;
+	int j;
+	int counter = 0;
+	while(/* keypad_read() == 'e' */ counter != 3){	// temporary condition	
+		if (i == 4){i = 0; counter++;}
+
+		// for control the function char by char
+		for(j = 0; j<MAX_DOT; j++){
+			*dot[j] = dot_TIME[i][j];
+		}
+		usleep(500000);
+		i++;
+	}
 }

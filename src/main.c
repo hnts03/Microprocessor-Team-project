@@ -114,10 +114,10 @@ truth_t logic(int* init_on) {
 	}
 
 	 if (TI == 1){
-	 // state_TI();
+	 state_TI();
 	 TI = 0; WS = 1;
 	 return FALSE;							// For debug
-	 }										// Successfully accesable
+	 }										// Successfully accesible
 
 
 	// if (WS == 1){state_WS(); WS = 0; WD = 1;}
@@ -164,15 +164,31 @@ truth_t select_mode(int* counter, int* exit_flag, int* init_on) {
 	if (*counter == 2){*counter = 0;}
 	scanf("%s", buf);
 	
-	if ((*buf == '0') || (*buf == '1') || (*buf == '2') || (*buf == '3')){return FALSE;}
+	if ((*buf == '0') || (*buf == '1') || (*buf == '2') || (*buf == '3')){
+		switch (*buf){
+			case '0':
+				s_init_clcd_select_mode("Standard");
+				break;
+			case '1':
+				s_init_clcd_select_mode("Blanket");
+				break;
+			case '2':
+				s_init_clcd_select_mode("Rinse");
+			case '3':
+				s_init_clcd_select_mode("Dehyderate");
+		}
+		sleep(2);
+		return FALSE;
+	}
 	else if(*buf == 'e'){
-		*exit_flag = 1; 
 		clcd_clear_display();
 		clcd_write_string("Exit mode");
+
 		dot_clear();
 		led_clear();
 		fnd_clear();
-		usleep(50000);
+
+		emergency_closer();
 		return FALSE;
 	}
 	else {printf("Wrong input. Try again\n"); (*counter) += 1; return TRUE;}
@@ -182,7 +198,6 @@ truth_t select_mode(int* counter, int* exit_flag, int* init_on) {
 
 // This function is for checking argv  
 error_t checker(int argc, char* argv[], int* init_on ){
-	int err_flag = 0;
 
 	if (argc > 4){return ERROR;}
 	else if (argc >= 2) {
@@ -193,7 +208,7 @@ error_t checker(int argc, char* argv[], int* init_on ){
 			//if(strcmp(argv[i], "dot-off") == 0){init_on[1] = 0;}
 			else if(strcmp(argv[i], "fnd-on") == 0){init_on[2] = 1;}
 			//if(strcmp(argv[i], "fnd-off") == 0){init_on[2] = 0;}
-			else {err_flag = 1; printf("err_flag_on");}
+			else {return ERROR;}
 		}
 	}
 	return SUCCESS;
@@ -207,9 +222,23 @@ void error(){
 	usleep(1000000);
 }
 
+void state_TI(){
+	int key_num = -1;
+	int enter_flag = 0;
+	int loop_count = 0;
+
+	s_TI_clcd();
+	// s_TI_led();				s_TI_led and dot will combine with while loop below
+	// s_TI_dot();
+	while(enter_flag != 1){
+		// enter_flag = s_TI_keypad(&key_num, &loop_count);
+		// /*enter_flag =*/s_TI_fnd(key_num, loop_count);
+		// sleep(1);			// sampling delay = 1s
+	}
+
+}
 
 
-//void state_TI(){}
 //void state_WS(){}
 //void state_WD(){}
 

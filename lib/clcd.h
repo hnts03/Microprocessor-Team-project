@@ -30,6 +30,9 @@ void clcd_function_set(int DL, int N, int F);
 void clcd_set_DDRAM(int address);
 void clcd_write_string(char str[]);
 void s_init_clcd();
+void s_init_clcd_select_mode(char* mode_name);
+void wrong_select();
+void s_TI_clcd();
 
 
 #endif
