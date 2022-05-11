@@ -1,4 +1,9 @@
 //-------| lib/main.h |-------//
+// #ifndef STRING_H
+// #define STRING_H
+// #include <string.h>		// strlen()
+// #endif
+
 #ifndef	MAIN_H
 #define	MAIN_H 
 

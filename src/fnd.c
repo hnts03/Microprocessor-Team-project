@@ -54,3 +54,18 @@ void fnd_hexa_number(unsigned long number) {
 		number = number >> 4;
 	}
 }
+
+// for s_init_fnd
+void fnd_0(){
+	int i;
+	for(i=0; i<MAX_FND; i++){
+		*fnd[i] = 0x3F;
+}
+
+// FND operation of 1st state.
+// if init_fnd_on == 1, turn all fnds on with 0
+// else, turn all fnds off
+void s_init_fnd(int init_fnd_on){
+	if (init_fnd_on == 1){fnd_0();}
+	else {fnd_clear();}
+}

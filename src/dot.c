@@ -45,3 +45,21 @@ void dot_write(int number) {
 	}
 	usleep(0); // for Ximulator
 }
+
+// for s_init_dot
+// dot matrix on
+void dot_on(){
+	int i;
+	for(i=0; i<MAX_DOT; i++){
+		*dot[i] = 0xFF;
+	}
+	usleep(0); // for Ximulator
+}
+
+// Operation of dot in 1st state.
+// if init_dot_on == 1, all matrix turn on
+// else, all matrix turn off
+void s_init_dot(int init_dot_on){
+	if (init_dot_on == 1) {dot_on();}
+	else {dot_clear();}
+}

@@ -69,3 +69,19 @@ void clcd_write_string(char str[]) {
 		clcd_write_data(str[i]);
 	}
 }
+
+// clcd operation of 1st state.
+void s_init_clcd(){
+	// clear cursor and display
+	clcd_clear_display();
+	clcd_return_home();
+	clcd_entry_mode_set(1, 0);		// write left->right, not mirrored
+
+	// write in 1st line
+	clcd_set_DDRAM(0); 				// set cursor : 0
+	clcd_write_string("Initializing...");
+
+	// write in 2nd line
+	clcd_set_DDRAM(0x40);
+	clcd_write_string("Insert Mode");	
+}

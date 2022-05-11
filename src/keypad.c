@@ -26,3 +26,11 @@ int keypad_read(int * key_value) {
 	}
 	return key_count;
 }
+
+
+int s_init_keypad(){
+	int temp = 10;
+	keypad_read(&temp);
+	if ((temp == 0) || (temp == 1) || (temp == 2) || (temp == 3)) {return 0;}
+	return 1;
+}

@@ -1,4 +1,10 @@
 //-------| lib/clcd.h |-------//
+// #ifndef STRING_H
+
+// #define STRING_H
+// #include <string.h>
+// #endif
+
 #ifndef	CLCD_H
 #define	CLCD_H 
 

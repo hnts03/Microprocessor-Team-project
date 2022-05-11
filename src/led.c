@@ -49,3 +49,21 @@ void led_all() {
 void led_bit(int number) {
 	*led = (short)~(number << 4);
 }
+
+// 1st state of FSM
+// make operation of each part and then combine them to 1 function
+// if init_led_on == 1, led up-down operation.
+// else, led not working
+void s_init_led(int init_led_on){
+	int i = 0;
+
+	if (init_led_on == 1){
+		while(/* is_key_clicked */){
+			i++;
+			if (i < 8){ *led = (short) ~((*unsigned long)0xFF00 >> i); usleep(100000);}
+			else if (i >= 8) {*led = (short) ~((*unsigned long)0xFF00 >> (i - 8)); usleep(100000);}
+			if (i == 16) {i = 0;}
+		}
+	}
+	else {*led = 0;}
+}
