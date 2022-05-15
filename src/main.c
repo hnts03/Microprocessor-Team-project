@@ -127,7 +127,7 @@ truth_t logic(int* init_on) {
 
 		TI = 0; WS = 1;
 		// return FALSE;							// For debug
-	}										// Successfully accesible
+	}										// Successfully accessible
 
 	// State 3
 	if (WS == 1){
@@ -223,7 +223,7 @@ error_t checker(int argc, char* argv[], int* init_on ){
 
 	if (argc > 4){return ERROR;}
 	else if (argc >= 2) {
-		for (int i = 0; i < argc; i++){
+		for (int i = 1; i < argc; i++){
 			if(strcmp(argv[i], "led-on") == 0){init_on[0] = 1;}
 			//if(strcmp(argv[i], "led-off") == 0){init_on[0] = 0;}  	// These are actually not needed
 			else if(strcmp(argv[i], "dot-on") == 0){init_on[1] = 1;}
@@ -239,7 +239,7 @@ error_t checker(int argc, char* argv[], int* init_on ){
 // if argv is not available
 void error(){
 	printf("Arguments are not available. Please Check the arguments.");
-	clcd_write_string("ERROR");
+	clcd_write_string("ERROR 1");
 
 	usleep(1000000);
 }

@@ -60,13 +60,10 @@ void led_bit(int number) {
 void s_init_led(int init_led_on){
 	int i = 0;
 
-	if (init_led_on == 1){
-		while(/* is_key_clicked */ i<=6){
-			i++;
-			if (i < 8){ *led = (short) ~((unsigned long)0xFF00 >> i); usleep(100000);}
-			// else if (i >= 8) {*led = (short) ~((unsigned long)0xFF00 >> (i - 8)); usleep(100000);}
-			if (i == 8) {i = 0;}
-		}
+	if (init_led_on == 1){		// For caring bug of Ximulator, Added 2 lines(64, 65).
+		*led = (short)(~(unsigned long)0xFF); 
+		usleep(5);
+		*led = (short)(~(unsigned long)0xFF);
 	}
 	else {*led = ~0;}
 }
