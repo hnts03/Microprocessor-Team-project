@@ -32,6 +32,11 @@ int TI = 0;
 int WS = 0;
 int WD = 0;
 
+// short * led, * dot[MAX_DOT], * fnd[MAX_FND];
+// short * clcd_cmd, * clcd_data/*, * keypad_out, * keypad_in*/; // in ximulator, keypad doesn't work
+
+
+
 
 int main(int argc, char* argv[]) {
 	
@@ -265,15 +270,41 @@ void state_TI(int* input_time, int* digit_num){
 void state_WS(int input_time, int digit_num){
 	// s_WS_led(input_time);
 	// s_WS_dot(input_time);
-	s_WS_fnd(input_time, digit_num);
+	// s_WS_fnd(input_time, digit_num);
 	// s_WS_clcd(input_time);
+
+	// Below codes are combined function
+	int i = 0;
+	int j = 0;
+	while(1){
+		if (i == input_time+1){break;}
+
+		//LED
+		s_WS_stack(i%9);
+
+		// Dot matrix
+		for(j = 0; j<MAX_DOT; j++){
+			s_WS_tornado(i%6, j);
+		}
+
+		// FND
+		fnd_deca_number(input_time-i, digit_num);
+
+		// CLCD
+		s_WS_scheduling(i);
+
+		i++;
+		usleep(500000);		// Delay for 0.5s
+	}
+
 }
 
 void state_WD(){
-	s_WD_fnd();
-	s_WD_clcd();
-	s_WD_led();
-	s_WD_dot();
+	// s_WD_fnd();
+	// s_WD_clcd();
+	// s_WD_led();
+	// s_WD_dot();
+
 
 }
 

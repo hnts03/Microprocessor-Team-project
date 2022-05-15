@@ -125,6 +125,15 @@ void s_WS_clcd(int input_time){
 	
 }
 
+// at WS state, s_WS_clcd converting to 1 processor multi-proccessing scheduled code
+void s_WS_scheduling(int counter){
+	clcd_clear_display();
+	if(counter%4 == 0) {clcd_write_string("Washing");}
+	if(counter%4 == 1) {clcd_write_string("Washing.");}
+	if(counter%4 == 2) {clcd_write_string("Washing..");}
+	if(counter%4 == 3) {clcd_write_string("Washing...");}
+}
+
 // clcd operation of 4th state
 void s_WD_clcd(){
 	clcd_clear_display();

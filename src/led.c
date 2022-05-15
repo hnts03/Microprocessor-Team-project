@@ -50,6 +50,9 @@ void led_bit(int number) {
 	*led = (short)~(number << 4);
 }
 
+
+
+
 // 1st state of FSM
 // make operation of each part and then combine them to 1 function
 // if init_led_on == 1, led up-down operation.
@@ -94,6 +97,10 @@ void s_WS_led(int input_time){
 		else if (i >= 8) {*led = (short) ~((unsigned long)(0x01 << i) >> 8 ); usleep(50000);}
 		if (i == 16) {i = 0;}
 	}
+}
+
+void s_WS_stack(int counter){
+	*led = (short)~((unsigned long)0xFF00 >> counter);
 }
 
 

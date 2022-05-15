@@ -66,6 +66,8 @@ void fnd_deca_number(unsigned long number, int digit_num){
 	}
 }
 
+
+
 // for s_init_fnd
 void fnd_0(){
 	int i;

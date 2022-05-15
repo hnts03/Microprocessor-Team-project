@@ -146,6 +146,11 @@ void s_WS_dot(int input_time){
 	}
 }
 
+void s_WS_tornado(int counter, int dot_vector_num){
+	*dot[dot_vector_num] = dot_tornado[counter][dot_vector_num];
+}
+
+
 // Operation of dot in 4th state
 void s_WD_dot(){
 	int i = 0;
