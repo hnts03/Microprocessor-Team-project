@@ -42,7 +42,7 @@ int s_TI_keypad(int* key_num, int* loop_count){
 	keypad_read(&temp_num);
 
 	if ((temp_num >= 10) || (temp_num <14)){		// if click wrong button
-		void wrong_select();
+		wrong_select();
 	}
 
 	else if (temp_num < 10){						// if click 0~9 button
@@ -58,12 +58,24 @@ int s_TI_keypad(int* key_num, int* loop_count){
 		}
 		else if(temp_num == 15){					//if click 15(f). => enter :: goto next state
 			if(*key_num == -1) {
-				void wrong_select();
+				wrong_select();
 				return 0;
 			}
 			return 1;
 		}
 
+	}
+	return 0;
+}
+
+int s_WD_keypad(){
+	int num = -1;
+	keypad_read(&num);
+	if (num == 11){
+		return 1;
+	}
+	else {
+		wrong_select();
 	}
 	return 0;
 }

@@ -158,7 +158,7 @@ void state_init(int* exit_flag, int* init_on){
 	s_init_clcd();							// static function
 	s_init_fnd(init_on[2]);					// static function
 	s_init_dot(init_on[1]);					// static function
-	s_init_led(init_on[0]);					// dynamic function
+	s_init_led(init_on[0]);					// static function
 
 	while(select_mode(&counter, exit_flag, init_on) == TRUE){ } // mode select loop
 
@@ -248,6 +248,8 @@ void state_TI(int* input_time, int* digit_num){
 	int key_num = -1;		
 	int enter_flag = 0;	
 	int loop_count = 0;
+	int i = 0;
+	int j = 0;
 
 	key_num = 11;				// These 3 assignment is for test
 	enter_flag = 1;
