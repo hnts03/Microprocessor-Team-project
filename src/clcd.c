@@ -124,3 +124,11 @@ void s_WS_clcd(int input_time){
 	}
 	
 }
+
+// clcd operation of 4th state
+void s_WD_clcd(){
+	clcd_clear_display();
+	clcd_write_string("Washing Done!");
+	clcd_set_DDRAM(0x40);
+	clcd_write_string("Exit : B");
+}

@@ -95,3 +95,18 @@ void s_WS_led(int input_time){
 		if (i == 16) {i = 0;}
 	}
 }
+
+
+// led operation of 4th sate
+// this function is same with s_TI_led(). but stop trigger is key_num
+void s_WD_led(){
+	int i=0;
+	while(1){
+		if(i==10){break;}			// for debugging
+
+		if(i%2 == 1) {*led = (short)0x55;}
+		else {*led = (short)0xAA;}
+		usleep(500000);
+		i++;
+	}
+}

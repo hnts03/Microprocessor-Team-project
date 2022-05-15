@@ -107,3 +107,12 @@ void s_WS_fnd(int input_time, int digit_num){
 		usleep(500000);		// for 0.5s
 	}
 }
+
+//FND operation of 4th state
+void s_WD_fnd(){
+	int index;
+	for (index = 1; index < MAX_FND; index++){
+		*fnd[index] = 0;
+	}
+	*fnd[0] = 0x3F;
+}

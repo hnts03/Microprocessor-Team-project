@@ -38,6 +38,13 @@ static unsigned short dot_tornado[6][MAX_DOT] = {
 	{0x38, 0x38, 0x36, 0x0E, 0x0E}
 };
 
+static unsigned short dot_DONE[4][MAX_DOT] = {
+	{0x7F, 0x7F, 0x63, 0x3E, 0x1C},
+	{0x3E, 0x7F, 0x41, 0x7F, 0x3E},
+	{0x7F, 0x70, 0x08, 0x07, 0x7F},
+	{0x7F, 0x7F, 0x49, 0x49, 0x49}
+};
+
 /*		Tornado bitmap
 11100     01110     00111      00000     00000     00000
 11100     01110     00111      00111     00000     11100
@@ -46,6 +53,18 @@ static unsigned short dot_tornado[6][MAX_DOT] = {
 00111     01110     11100      11100     11011     00111
 00111     01110     11100      11100     00000     00111
 00111     01110     11100      00000     00000     00000
+*/
+
+/*	DONE
+11100	01110	11001	11111
+11110	11011	11001	11000
+11011	11011	11001	11000
+11011	11011	10101	11111
+11011	11011	10011	11000
+11110	11011	10011	11000
+11100	01110	10011	11111
+
+
 */
 
 
@@ -123,6 +142,23 @@ void s_WS_dot(int input_time){
 			*dot[j] = dot_tornado[i][j];
 		}
 		usleep(50000);
+		i++;
+	}
+}
+
+// Operation of dot in 4th state
+void s_WD_dot(){
+	int i = 0;
+	int j = 0;
+	while(1){
+		if (i == 10) {break;}
+
+
+		for(j = 0; j < MAX_DOT; j++){
+			*dot[j] = dot_DONE[i%4][j];
+		}
+
+		usleep(100000);
 		i++;
 	}
 }

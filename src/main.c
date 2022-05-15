@@ -244,7 +244,7 @@ void state_TI(int* input_time, int* digit_num){
 	int enter_flag = 0;	
 	int loop_count = 0;
 
-	key_num = 37;				// These 3 assignment is for test
+	key_num = 11;				// These 3 assignment is for test
 	enter_flag = 1;
 	loop_count = 2;
 
@@ -263,13 +263,17 @@ void state_TI(int* input_time, int* digit_num){
 
 
 void state_WS(int input_time, int digit_num){
-	s_WS_led(input_time);
+	// s_WS_led(input_time);
 	// s_WS_dot(input_time);
-	// s_WS_fnd(input_time, digit_num);
+	s_WS_fnd(input_time, digit_num);
 	// s_WS_clcd(input_time);
 }
 
 void state_WD(){
+	s_WD_fnd();
+	s_WD_clcd();
+	s_WD_led();
+	s_WD_dot();
 
 }
 
