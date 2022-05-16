@@ -83,6 +83,11 @@ void s_TI_led(){
 
 }
 
+void s_TI_scheduling(int count){
+	if (count%2 == 1) {*led = (short) ~(0xAA);}
+	else {*led = (short) ~(0x55);}
+}
+
 // led operation of 3rd state
 // this function is same with s_init_led(). but stop trigger is key_num
 void s_WS_led(int input_time){
@@ -113,4 +118,9 @@ void s_WD_led(){
 		usleep(500000);
 		i++;
 	}
+}
+
+void s_WD_scheduling(int count){
+	if (count%2 == 1) {*led = (short) ~(0xAA);}
+	else {*led = (short) ~(0x55);}
 }

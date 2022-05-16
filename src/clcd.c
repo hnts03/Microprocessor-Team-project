@@ -141,3 +141,4 @@ void s_WD_clcd(){
 	clcd_set_DDRAM(0x40);
 	clcd_write_string("Exit : B");
 }
+

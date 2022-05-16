@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
 	
 	int i;
 	short * led, * dot[MAX_DOT], * fnd[MAX_FND];
-	short * clcd_cmd, * clcd_data/*, * keypad_out, * keypad_in*/; // in ximulator, keypad doesn't work
+	short * clcd_cmd, * clcd_data, * keypad_out, * keypad_in; // in ximulator, keypad doesn't work
 
 	int init_on[3] = {0, 0, 0};	// control flag of init, [0] : led, [1] : dot, [2] : fnd
 	
@@ -64,8 +64,8 @@ int main(int argc, char* argv[]) {
 	}
 	clcd_cmd  = mapper(IEB_CLCD_CMD, PROT_WRITE);
 	clcd_data = mapper(IEB_CLCD_DATA, PROT_WRITE);
-	//keypad_out  = mapper(IEB_KEY_W, PROT_WRITE);	// in ximulator, keypad doesn't work
-	//keypad_in = mapper(IEB_KEY_R, PROT_READ);		// in ximulator, keypad doesn't work
+	keypad_out  = mapper(IEB_KEY_W, PROT_WRITE);		// in ximulator, keypad doesn't work
+	keypad_in = mapper(IEB_KEY_R, PROT_READ);		// in ximulator, keypad doesn't work
 	
 
 
@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) {
 	init_dot(dot);
 	init_fnd(fnd);
 	init_clcd(clcd_cmd, clcd_data);
-	//init_keypad(keypad_out, keypad_in);			// in ximulator, keypad doesn't work
+	init_keypad(keypad_out, keypad_in);			// in ximulator, keypad doesn't work
 	
 	sel.all = 0;
 
@@ -220,16 +220,17 @@ truth_t select_mode(int* counter, int* exit_flag, int* init_on) {
 
 // This function is for checking argv  
 error_t checker(int argc, char* argv[], int* init_on ){
+	int i;
 
 	if (argc > 4){return ERROR;}
 	else if (argc >= 2) {
-		for (int i = 1; i < argc; i++){
+		for (i = 1; i < argc; i++){
 			if(strcmp(argv[i], "led-on") == 0){init_on[0] = 1;}
-			//if(strcmp(argv[i], "led-off") == 0){init_on[0] = 0;}  	// These are actually not needed
+			else if(strcmp(argv[i], "led-off") == 0){init_on[0] = 0;}  	// These are actually not needed
 			else if(strcmp(argv[i], "dot-on") == 0){init_on[1] = 1;}
-			//if(strcmp(argv[i], "dot-off") == 0){init_on[1] = 0;}
+			else if(strcmp(argv[i], "dot-off") == 0){init_on[1] = 0;}
 			else if(strcmp(argv[i], "fnd-on") == 0){init_on[2] = 1;}
-			//if(strcmp(argv[i], "fnd-off") == 0){init_on[2] = 0;}
+			else if(strcmp(argv[i], "fnd-off") == 0){init_on[2] = 0;}
 			else {return ERROR;}
 		}
 	}
@@ -238,7 +239,7 @@ error_t checker(int argc, char* argv[], int* init_on ){
 
 // if argv is not available
 void error(){
-	printf("Arguments are not available. Please Check the arguments.");
+	printf("Arguments are not available. Please Check the arguments.\n");
 	clcd_write_string("ERROR 1");
 
 	usleep(1000000);
@@ -251,19 +252,25 @@ void state_TI(int* input_time, int* digit_num){
 	int i = 0;
 	int j = 0;
 
-	key_num = 11;				// These 3 assignment is for test
-	enter_flag = 1;
-	loop_count = 2;
+	//key_num = 11;				// These 3 assignment is for test
+	//enter_flag = 1;
+	//loop_count = 2;
 
 	s_TI_clcd();
 	s_TI_fnd(key_num, loop_count);	// for test.
 	// s_TI_led();				// s_TI_led and dot will combine with while loop below
 	// s_TI_dot();
 	while(enter_flag != 1){
-		// enter_flag = s_TI_keypad(&key_num, &loop_count);
-		// /*enter_flag =*/s_TI_fnd(key_num, loop_count);
-		// sleep(1);			// sampling delay = 1s
+		if (i%4 == 1) {s_TI_clcd();}
+		enter_flag = s_TI_keypad(&key_num, &loop_count);		// keypad
+		s_TI_fnd(key_num, loop_count);					// fnd
+		s_TI_scheduling(i);						// led
+		s_TI_dot(i);
+		i++;
+		usleep(1000000);			// sampling delay = 1s
+
 	}
+	sleep(2);					
 	*input_time = key_num;
 	*digit_num = loop_count;
 }
@@ -302,10 +309,35 @@ void state_WS(int input_time, int digit_num){
 }
 
 void state_WD(){
+	int i = 0;
+	int WD_exit_flag = 0;
+	s_WD_clcd();			// clcd
+	s_WD_fnd();			// fnd
+	while(WD_exit_flag != 1){
+
+	s_WD_scheduling(i);		// led	
+	s_WD_dot(i);			// dot
+	WD_exit_flag = s_WD_keypad();	// keypad
+
+	i++;
+	usleep(1000000);
+	}
 	// s_WD_fnd();
 	// s_WD_clcd();
 	// s_WD_led();
 	// s_WD_dot();
+
+
+	clcd_clear_display();
+	clcd_write_string("All Operation");
+	clcd_set_DDRAM(0x40);
+	clcd_write_string("Done!");
+	sleep(2);
+
+	clcd_clear_display();		// clear parts
+	fnd_clear();
+	dot_clear();
+	led_clear();
 
 
 }

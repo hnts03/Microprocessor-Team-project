@@ -113,20 +113,15 @@ void s_init_dot(int init_dot_on){
 
 
 // Operation of dot in 2nd state
-void s_TI_dot(){
-	int i = 0;
+void s_TI_dot(int index){
 	int j;
-	int counter = 0;
-	while(/* keypad_read() == 'e' */ counter != 3){	// temporary condition	
-		if (i == 4){i = 0; counter++;}
 
-		// for control the function char by char
-		for(j = 0; j<MAX_DOT; j++){
-			*dot[j] = dot_TIME[i][j];
-		}
-		usleep(50000);
-		i++;
+
+	// for control the function char by char
+	for(j = 0; j<MAX_DOT; j++){
+		*dot[j] = dot_TIME[index%4][j];
 	}
+	
 }
 
 // Operation of dot in 3rd state
@@ -152,18 +147,13 @@ void s_WS_tornado(int counter, int dot_vector_num){
 
 
 // Operation of dot in 4th state
-void s_WD_dot(){
+void s_WD_dot(int index){
 	int i = 0;
 	int j = 0;
-	while(1){
-		if (i == 10) {break;}
 
-
-		for(j = 0; j < MAX_DOT; j++){
-			*dot[j] = dot_DONE[i%4][j];
-		}
-
-		usleep(100000);
-		i++;
+	for(j = 0; j < MAX_DOT; j++){
+		*dot[j] = dot_DONE[index%4][j];
 	}
+
 }
+

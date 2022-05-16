@@ -17,5 +17,6 @@ void s_TI_led();
 void s_WS_led(int input_time);
 void s_WD_led();
 void s_WS_stack(int counter);
-
+void s_TI_scheduling(int count);
+void s_WD_scheduling(int count);
 #endif

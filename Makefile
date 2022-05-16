@@ -1,4 +1,4 @@
-CC := gcc
+CC := /usr/local/arm-linux-4.1.1/bin/arm-linux-gcc
 
 OUTPUT		= washer
 SRCS		= ./src/main.c \
@@ -17,6 +17,7 @@ $(OUTPUT) : $(SRCS)
 xim : $(SRCS)
 	@cd /usr/xim && $(MAKE) -s xim_OUTPUT="$(OUTPUT)" \
 	xim_PATH="$(PWD)" xim_SRCS="$(SRCS)" xim_CFLAGS="$(CFLAGS)"
+
 
 clean:
 	@rm -f $(OUTPUT)
