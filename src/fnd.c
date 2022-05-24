@@ -1,5 +1,5 @@
 //-------| src/fnd.c |-------//
-#include "fnd.h"
+#include "fnd.h" 
 
 static unsigned short fnd_hexadecimal[16] = {
 	0x3F, // 0
@@ -55,7 +55,10 @@ void fnd_hexa_number(unsigned long number) {
 	}
 }
 
+
+
 // for s_WS_fnd
+// similar with fnd_hexa_number. but this function makes only decimal
 void fnd_deca_number(unsigned long number, int digit_num){
 	int i;
 	int temp = number;
@@ -67,8 +70,8 @@ void fnd_deca_number(unsigned long number, int digit_num){
 }
 
 
-
 // for s_init_fnd
+// makes all FND be 0
 void fnd_0(){
 	int i;
 	for(i=0; i<MAX_FND; i++){
@@ -76,7 +79,7 @@ void fnd_0(){
 	}
 }
 
-// FND operation of 1st state.
+// init state
 // if init_fnd_on == 1, turn all fnds on with 0
 // else, turn all fnds off
 void s_init_fnd(int init_fnd_on){
@@ -85,7 +88,8 @@ void s_init_fnd(int init_fnd_on){
 }
 
 
-// FND operation of 2nd state
+// TI staet
+// FND prints inserted number
 int s_TI_fnd(int key_num, int loop_counter){
 	int temp_num;
 	int calc_step = key_num;
@@ -103,7 +107,8 @@ int s_TI_fnd(int key_num, int loop_counter){
 	return 1;
 }
 
-// FND operation of 3rd state
+// WS state
+// FND prints time goes down
 void s_WS_fnd(int input_time, int digit_num){
 	int time;
 	for (time = input_time; time >= 0; time--){
@@ -112,7 +117,8 @@ void s_WS_fnd(int input_time, int digit_num){
 	}
 }
 
-//FND operation of 4th state
+// WD state
+// all FNDs OFF and print 0 with 0 indexed fnd
 void s_WD_fnd(){
 	int index;
 	for (index = 1; index < MAX_FND; index++){

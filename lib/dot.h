@@ -1,6 +1,6 @@
 //-------| lib/dot.h |-------//
 #ifndef	DOT_H
-#define	DOT_H 
+#define	DOT_H  
 
 
 #include <unistd.h> // usleep()

@@ -1,5 +1,5 @@
 //-------| src/dot.c |-------//
-#include "dot.h"
+#include "dot.h"  
 
 
 static unsigned short dot_hexadecimal[16][MAX_DOT] = {
@@ -63,8 +63,6 @@ static unsigned short dot_DONE[4][MAX_DOT] = {
 11011	11011	10011	11000
 11110	11011	10011	11000
 11100	01110	10011	11111
-
-
 */
 
 
@@ -93,6 +91,7 @@ void dot_write(int number) {
 	usleep(0); // for Ximulator
 }
 
+
 // for s_init_dot
 // dot matrix on
 void dot_on(){
@@ -103,7 +102,7 @@ void dot_on(){
 	usleep(0); // for Ximulator
 }
 
-// Operation of dot in 1st state.
+// init state
 // if init_dot_on == 1, all matrix turn on
 // else, all matrix turn off
 void s_init_dot(int init_dot_on){
@@ -112,19 +111,20 @@ void s_init_dot(int init_dot_on){
 }
 
 
-// Operation of dot in 2nd state
+// TI state
 void s_TI_dot(int index){
 	int j;
 
-
 	// for control the function char by char
+	// print TIME with DOT matrix
 	for(j = 0; j<MAX_DOT; j++){
 		*dot[j] = dot_TIME[index%4][j];
 	}
 	
 }
 
-// Operation of dot in 3rd state
+// WS state
+// print tornado image
 void s_WS_dot(int input_time){
 	int i = 0;
 	int j;
@@ -141,12 +141,13 @@ void s_WS_dot(int input_time){
 	}
 }
 
+// This function is actual WS state function.
 void s_WS_tornado(int counter, int dot_vector_num){
 	*dot[dot_vector_num] = dot_tornado[counter][dot_vector_num];
 }
 
 
-// Operation of dot in 4th state
+// WD state
 void s_WD_dot(int index){
 	int i = 0;
 	int j = 0;

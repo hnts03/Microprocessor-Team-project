@@ -2,7 +2,7 @@
 // #ifndef STRING_H
 // #define STRING_H
 // #include <string.h>		// strlen()
-// #endif
+// #endif 
 
 #ifndef	MAIN_H
 #define	MAIN_H 
@@ -60,6 +60,10 @@ void state_init(int* exit_flag, int* init_on);
 void state_TI(int* input_time, int* digit_num);
 void state_WS(int input_time, int digit_num);
 void state_WD();
+void term_TI(int key_num, int input_key);
+void term_WS(int left_time);
+void term_WD();
+void term_EXIT(int step);
 
 
 #endif

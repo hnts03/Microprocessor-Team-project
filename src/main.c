@@ -1,5 +1,5 @@
 //-------| src/main.c |-------//
-#include "main.h"
+#include "main.h" 
 
 
 static off_t IEB_DOT[MAX_DOT] = {
@@ -23,7 +23,7 @@ static off_t IEB_FND[MAX_FND] = {
 static int fd;
 static int map_counter = 0;
 static void * map_data[100];
-static seclection_t sel; // selection_t struct is in main.h
+static seclection_t sel; // selection_t struct is in main.h, This variable actually not use in this program
 
 // This variables are state flag.
 // Start the state that matching flag is 1
@@ -31,11 +31,6 @@ int init = 1;
 int TI = 0;
 int WS = 0;
 int WD = 0;
-
-// short * led, * dot[MAX_DOT], * fnd[MAX_FND];
-// short * clcd_cmd, * clcd_data/*, * keypad_out, * keypad_in*/; // in ximulator, keypad doesn't work
-
-
 
 
 int main(int argc, char* argv[]) {
@@ -65,7 +60,7 @@ int main(int argc, char* argv[]) {
 	clcd_cmd  = mapper(IEB_CLCD_CMD, PROT_WRITE);
 	clcd_data = mapper(IEB_CLCD_DATA, PROT_WRITE);
 	keypad_out  = mapper(IEB_KEY_W, PROT_WRITE);		// in ximulator, keypad doesn't work
-	keypad_in = mapper(IEB_KEY_R, PROT_READ);		// in ximulator, keypad doesn't work
+	keypad_in = mapper(IEB_KEY_R, PROT_READ);			// in ximulator, keypad doesn't work
 	
 
 
@@ -74,15 +69,24 @@ int main(int argc, char* argv[]) {
 	init_dot(dot);
 	init_fnd(fnd);
 	init_clcd(clcd_cmd, clcd_data);
-	init_keypad(keypad_out, keypad_in);			// in ximulator, keypad doesn't work
+	init_keypad(keypad_out, keypad_in);					// in ximulator, keypad doesn't work
 	
-	sel.all = 0;
+	sel.all = 0;										// actually, not use in this program
 
+
+	// Checking part
 	if (checker(argc, argv, init_on) == ERROR){error();}
-	else {while( logic(init_on) == TRUE ) {	}}
+	else {while( logic(init_on) == TRUE ) {	}}			// logic() looping in while loop
 	
+
+	// If WD state over, program closing part
 	unmapper();
+	term_EXIT(3);						// Unmapping Done msg | Terminal
+	sleep(1);
+
 	close(fd);
+	term_EXIT(4);						// Closing FD Done msg | Terminal
+	sleep(1);
 	return 0;
 }
 
@@ -146,19 +150,22 @@ truth_t logic(int* init_on) {
 	return TRUE;
 }
 
+// Init state
 void state_init(int* exit_flag, int* init_on){
 	int counter = 2;
 
 	//system("clear");						// clear terminal window
+
+	// all parts clear
 	led_clear();
 	dot_clear();
 	fnd_clear();
 	clcd_clear_display();
 
-	s_init_clcd();							// static function
-	s_init_fnd(init_on[2]);					// static function
-	s_init_dot(init_on[1]);					// static function
-	s_init_led(init_on[0]);					// static function
+	s_init_clcd();							// static function | CLCD
+	s_init_fnd(init_on[2]);					// static function | FND
+	s_init_dot(init_on[1]);					// static function | DOT
+	s_init_led(init_on[0]);					// static function | LED
 
 	while(select_mode(&counter, exit_flag, init_on) == TRUE){ } // mode select loop
 
@@ -166,6 +173,10 @@ void state_init(int* exit_flag, int* init_on){
 }
 
 
+// Mode select function.
+// Using keyboard input(scanf() function), selects mode.
+// In real, selecting not makes changes.
+// It just shows possibility for branching new states. :: Update probability
 truth_t select_mode(int* counter, int* exit_flag, int* init_on) {
 	int i;  char buf[100];
 	char clcd_str[20] = "";
@@ -245,10 +256,13 @@ void error(){
 	usleep(1000000);
 }
 
+
+// TI state
 void state_TI(int* input_time, int* digit_num){
 	int key_num = -1;		
 	int enter_flag = 0;	
 	int loop_count = 0;
+	int input_key = -1;
 	int i = 0;
 	int j = 0;
 
@@ -256,18 +270,19 @@ void state_TI(int* input_time, int* digit_num){
 	//enter_flag = 1;
 	//loop_count = 2;
 
-	s_TI_clcd();
-	s_TI_fnd(key_num, loop_count);	// for test.
-	// s_TI_led();				// s_TI_led and dot will combine with while loop below
-	// s_TI_dot();
+	s_TI_clcd();														// static function | CLCD		
+	// s_TI_fnd(key_num, loop_count);	// for test.
+
 	while(enter_flag != 1){
 		if (i%4 == 1) {s_TI_clcd();}
-		enter_flag = s_TI_keypad(&key_num, &loop_count);		// keypad
-		s_TI_fnd(key_num, loop_count);					// fnd
-		s_TI_scheduling(i);						// led
-		s_TI_dot(i);
+		enter_flag = s_TI_keypad(&key_num, &loop_count, &input_key);	// dynamic function | KEYPAD
+		s_TI_fnd(key_num, loop_count);									// dynamic function | FND
+		s_TI_scheduling(i);												// dynamic function | LED
+		s_TI_dot(i);													// dynamic function | DOT
+
+		term_TI(key_num, input_key);									// Terminal window
 		i++;
-		usleep(1000000);			// sampling delay = 1s
+		usleep(1000000);			// Sampling frequency : 1Hz
 
 	}
 	sleep(2);					
@@ -301,9 +316,12 @@ void state_WS(int input_time, int digit_num){
 
 		// CLCD
 		s_WS_scheduling(i);
+		
+		// Terminal
+		term_WS(input_time - i);
 
 		i++;
-		usleep(500000);		// Delay for 0.5s
+		usleep(500000);		// Delay for 0.5s. This line control operation time of WS state
 	}
 
 }
@@ -311,16 +329,20 @@ void state_WS(int input_time, int digit_num){
 void state_WD(){
 	int i = 0;
 	int WD_exit_flag = 0;
-	s_WD_clcd();			// clcd
-	s_WD_fnd();			// fnd
+
+	s_WD_clcd();						// static function | clcd
+	s_WD_fnd();							// static function | fnd
+
+	term_WD();							// terminal
+
 	while(WD_exit_flag != 1){
 
-	s_WD_scheduling(i);		// led	
-	s_WD_dot(i);			// dot
-	WD_exit_flag = s_WD_keypad();	// keypad
+		s_WD_scheduling(i);				// dynamic function | led	
+		s_WD_dot(i);					// dynamic function | dot
+		WD_exit_flag = s_WD_keypad();	// dynamic function |keypad
 
-	i++;
-	usleep(1000000);
+		i++;
+		usleep(1000000);				// Sampling frequency : 1Hz
 	}
 	// s_WD_fnd();
 	// s_WD_clcd();
@@ -332,13 +354,103 @@ void state_WD(){
 	clcd_write_string("All Operation");
 	clcd_set_DDRAM(0x40);
 	clcd_write_string("Done!");
+	term_EXIT(1);			// Exitting start msg | Terminal
 	sleep(2);
 
 	clcd_clear_display();		// clear parts
 	fnd_clear();
 	dot_clear();
 	led_clear();
+	term_EXIT(2);			// Parts Initialize msg |Terminal
+}
 
 
+// below terminal functions are for cmd window.
+// this window will help when debugging or updating program later.
+void term_TI(int key_num, int input_key){
+	system("clear");
+	printf("\n");
+	printf("************ [TI state] ************\n");
+	printf("* Current input number : %-8d  *\n", key_num);
+	printf("* Pressed key number : %-2d          *\n",input_key);
+	printf("************************************\n");
+	printf("* Sampling Freq : 1Hz              *\n");
+	printf("************************************\n\n");
+}
+
+void term_WS(int left_time){
+	system("clear");
+	printf("\n");
+	printf("************ [WS state] ************\n");
+	printf("*                                  *\n");
+	printf("*            Wasing Now...         *\n");
+	printf("*				   *\n");
+	printf("*         Time left(s) : %-8d *\n", left_time);
+	printf("************************************\n\n");
+}
+
+void term_WD(int left_time){
+	system("clear");
+	printf("\n");
+	printf("************ [WD state] ************\n");
+	printf("*                                  *\n");
+	printf("*            Wasing Done!          *\n");
+	printf("*				   *\n");
+	printf("*          Press Button [B]!       *\n");
+	printf("*				   *\n");
+	printf("************************************\n\n");
+}
+
+void term_EXIT(int step){
+	if (step == 1){
+		system("clear");
+		printf("\n");
+		printf("************** [EXIT] **************\n");
+		printf("*                                  *\n");
+		printf("*           EXIT PROGRAM           *\n");
+		printf("*				   *\n");
+		printf("************************************\n\n");
+	}
+	else if (step == 2){
+		system("clear");
+		printf("\n");
+		printf("************** [EXIT] **************\n");
+		printf("*                                  *\n");
+		printf("*           EXIT PROGRAM           *\n");
+		printf("*				   *\n");
+		printf("*   Initializing All Parts DONE    *\n");
+		printf("*				   *\n");
+		printf("************************************\n\n");
+	}
+
+	else if (step == 3){
+		system("clear");
+		printf("\n");
+		printf("************** [EXIT] **************\n");
+		printf("*                                  *\n");
+		printf("*           EXIT PROGRAM           *\n");
+		printf("*				   *\n");
+		printf("*   Initializing All Parts DONE    *\n");
+		printf("*				   *\n");
+		printf("*       Memory Unmapping  DONE     *\n");
+		printf("*				   *\n");
+		printf("************************************\n\n");
+	}
+
+	else if (step == 4){
+		system("clear");
+		printf("\n");
+		printf("************** [EXIT] **************\n");
+		printf("*                                  *\n");
+		printf("*           EXIT PROGRAM           *\n");
+		printf("*				   *\n");
+		printf("*   Initializing All Parts DONE    *\n");
+		printf("*				   *\n");
+		printf("*       Memory Unmapping  DONE     *\n");
+		printf("*				   *\n");
+		printf("*          Closing FD Done         *\n");
+		printf("*				   *\n");
+		printf("************************************\n\n");
+	}
 }
 

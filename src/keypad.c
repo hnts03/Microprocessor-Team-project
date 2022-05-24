@@ -2,7 +2,7 @@
 //#include "keypad.h"
 //#include "clcd.h"
 //#include "fnd.h"
-#include "main.h"
+#include "main.h" 	// for using stdio.h and other headers
 
 static short * keypad_out, * keypad_in;
 static int pressed_key_num;
@@ -30,7 +30,8 @@ int keypad_read(int * key_value) {
 	return key_count;
 }
 
-
+// init state keypad function.
+// This function not used.
 int s_init_keypad(){
 	int temp = 10;
 	keypad_read(&temp);
@@ -38,7 +39,10 @@ int s_init_keypad(){
 	return 1;
 }
 
-int s_TI_keypad(int* key_num, int* loop_count){
+// TI state
+// This function uses only 0~9, e, f button.
+// using for time insertion with decimal number.
+int s_TI_keypad(int* key_num, int* loop_count, int* input_key){
 	int temp_num;
 	int cur_key_num = *key_num;
 	pressed_key_num = keypad_read(&temp_num);
@@ -48,24 +52,21 @@ int s_TI_keypad(int* key_num, int* loop_count){
 			wrong_select();
 			usleep(500000);					// 0.5s for err message
 			clcd_clear_display();
-			clcd_write_string("111111");
-			system("clear");
-			printf("%d is temp_num\n", temp_num);
-			printf("%d is temp_num\n", temp_num);
-			printf("%d is temp_num\n", temp_num);
+			//system("clear");
+			//printf("%d is temp_num\n", temp_num);
+
 			sleep(2);
 		}
 
 		else if (temp_num < 10){						// if click 0~9 button
 			if(cur_key_num == -1){cur_key_num = 0;}
 			*key_num = cur_key_num * 10 + temp_num;
-			system("clear");
-			printf("%d is temp_num\n", temp_num);
-			printf("%d is temp_num\n", temp_num);
-			printf("%d is temp_num\n", temp_num);
-			printf("%d is *key_num\n", *key_num);
-			printf("%d is *key_num\n", *key_num);
-			printf("%d is *key_num\n", *key_num);
+			*input_key = temp_num;
+			//system("clear");
+			
+			//printf("%d is temp_num\n", temp_num);
+			//printf("%d is *key_num\n", *key_num);
+			
 	
 			*loop_count += 1;	// This variable points number of digits
 		}
@@ -76,13 +77,9 @@ int s_TI_keypad(int* key_num, int* loop_count){
 				*loop_count -= 1;
 				if (*loop_count <= 0) {*loop_count = 0; fnd_clear();}
 
-				system("clear");
-				printf("%d is temp_num\n", temp_num);
-				printf("%d is temp_num\n", temp_num);
-				printf("%dpressed_key_num is temp_num\n", temp_num);
-				printf("%d is *key_num\n", *key_num);
-				printf("%d is *key_num\n", *key_num);
-				printf("%d is *key_num\n", *key_num);
+				//system("clear");
+				//printf("%dpressed_key_num is temp_num\n", temp_num);
+				//printf("%d is *key_num\n", *key_num);
 
 			}
 			else if(temp_num == 15){					//if click 15(f). => enter :: goto next state
@@ -95,6 +92,18 @@ int s_TI_keypad(int* key_num, int* loop_count){
 				clcd_clear_display();
 				clcd_write_string("ENTER PRESSED!");
 				
+				system("clear");
+				printf("\n");
+				printf("************ [TI state] ************\n");
+				printf("* Current input number : %-8d  *\n", *key_num);
+				printf("* Pressed key number : %-2d          *\n",temp_num);
+				printf("************************************\n");
+				printf("* Sampling Freq : 1Hz              *\n");
+				printf("************************************\n");
+				printf("* Enter Pressed!                   *\n");
+				printf("************************************\n\n");
+				sleep(1);				
+
 				return 1;
 			}
 
@@ -106,6 +115,8 @@ int s_TI_keypad(int* key_num, int* loop_count){
 	
 }
 
+// WD state
+// if machine done, press b button for extting program.
 int s_WD_keypad(){
 	int num = -1;
 	pressed_key_num = keypad_read(&num);
@@ -113,13 +124,26 @@ int s_WD_keypad(){
 		if (num == 11){
 			clcd_clear_display();
 			clcd_write_string("EXIT PRESSED!");
+
+			system("clear");
+			printf("\n");
+			printf("************ [WD state] ************\n");
+			printf("*                                  *\n");
+			printf("*            Wasing Done!          *\n");
+			printf("*				   *\n");
+			printf("*          Press Button [B]!       *\n");
+			printf("*				   *\n");
+			printf("*         Button [B] Pressed!      *\n");
+			printf("*				   *\n");
+			printf("************************************\n\n");
+
 			sleep(1);
 			return 1;
 		}
 		else {
-			wrong_select();
+			wrong_select();			// wrong input, retry
 			sleep(1);
-			s_WD_clcd();
+			s_WD_clcd();			// Change to WD state clcd operation
 		}
 	}
 	

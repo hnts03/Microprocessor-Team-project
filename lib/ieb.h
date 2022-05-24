@@ -1,6 +1,6 @@
 //-------| lib/ieb.h |-------//
 #ifndef	IEB_H
-#define	IEB_H 
+#define	IEB_H  
 
 
 #include <unistd.h>	// off_t

@@ -1,5 +1,5 @@
 //-------| lib/fnd.h |-------//
-#ifndef	FND_H
+#ifndef	FND_H 
 #define	FND_H 
 
 

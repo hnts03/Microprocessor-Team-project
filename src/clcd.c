@@ -1,5 +1,5 @@
 //-------| src/clcd.c |-------//
-#include "clcd.h"
+#include "clcd.h"  
 
 
 
@@ -70,7 +70,7 @@ void clcd_write_string(char str[]) {
 	}
 }
 
-// clcd operation of 1st state.
+// init state
 void s_init_clcd(){
 	// clear cursor and display
 	clcd_clear_display();
